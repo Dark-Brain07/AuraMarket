@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Sparkles, Brain, CheckCircle, Search, Activity, Wallet } from 'lucide-react';
 import { createClient, createAccount } from 'genlayer-js';
 import { studionet } from 'genlayer-js/chains';
@@ -29,7 +29,7 @@ function App() {
     if (!contractAddress) return;
     try {
       const data = await glClient.readContract({
-        address: contractAddress,
+        address: contractAddress as `0x${string}`,
         functionName: 'get_market',
         args: ['m1'],
       });
@@ -65,7 +65,7 @@ function App() {
     setLoadingText('Broadcasting new market to GenLayer...');
     try {
       const txHash = await glClient.writeContract({
-        address: contractAddress,
+        address: contractAddress as `0x${string}`,
         functionName: 'create_market',
         args: ['m1', newQuestion, newUrl],
         value: 0n,
@@ -108,7 +108,7 @@ function App() {
       // In a production environment, we would use the walletAddress to sign.
       // For GenLayer Studionet, we use the auto-generated client to avoid gas issues for the demo.
       const txHash = await glClient.writeContract({
-        address: contractAddress,
+        address: contractAddress as `0x${string}`,
         functionName: 'place_bet',
         args: ['m1', prediction, "1"],
         value: 0n,
@@ -127,7 +127,7 @@ function App() {
     setLoadingText('AI Oracle fetching web evidence & establishing consensus...');
     try {
       const txHash = await glClient.writeContract({
-        address: contractAddress,
+        address: contractAddress as `0x${string}`,
         functionName: 'resolve_market',
         args: ['m1'],
         value: 0n,
