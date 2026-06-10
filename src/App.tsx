@@ -8,7 +8,7 @@ const glAccount = createAccount();
 const glClient = createClient({ chain: studionet, account: glAccount });
 
 function App() {
-  const [contractAddress, setContractAddress] = useState('0xe5Ea8D654775Fb8883BDB9949f1B5254ae02fF2A');
+  const [contractAddress] = useState('0xe5Ea8D654775Fb8883BDB9949f1B5254ae02fF2A');
   const [currentMarketId, setCurrentMarketId] = useState('m1');
   const [market, setMarket] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
