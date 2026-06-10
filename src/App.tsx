@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Sparkles, Brain, CheckCircle, Search, Activity, Wallet } from 'lucide-react';
+import { Sparkles, Brain, CheckCircle, Search, Activity, Wallet, PlusCircle } from 'lucide-react';
 import { createClient, createAccount } from 'genlayer-js';
 import { studionet } from 'genlayer-js/chains';
 import { TransactionStatus } from 'genlayer-js/types';
@@ -9,6 +9,7 @@ const glClient = createClient({ chain: studionet, account: glAccount });
 
 function App() {
   const [contractAddress, setContractAddress] = useState('0xe5Ea8D654775Fb8883BDB9949f1B5254ae02fF2A');
+  const [currentMarketId, setCurrentMarketId] = useState('m1');
   const [market, setMarket] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [loadingText, setLoadingText] = useState('');
@@ -23,7 +24,7 @@ function App() {
   // Fetch real data on load
   useEffect(() => {
     refreshMarket();
-  }, [contractAddress]);
+  }, [contractAddress, currentMarketId]);
 
   const refreshMarket = async () => {
     if (!contractAddress) return;
@@ -31,7 +32,7 @@ function App() {
       const data = await glClient.readContract({
         address: contractAddress as `0x${string}`,
         functionName: 'get_market',
-        args: ['m1'],
+        args: [currentMarketId],
       });
       if (data && data !== 'NOT_FOUND') {
         setMarket(JSON.parse(data as string));
@@ -64,14 +65,15 @@ function App() {
     setIsProcessing(true);
     setLoadingText('Broadcasting new market to GenLayer...');
     try {
+      const generatedId = 'm_' + Date.now(); // Generate a truly unique market ID
       const txHash = await glClient.writeContract({
         address: contractAddress as `0x${string}`,
         functionName: 'create_market',
-        args: ['m1', newQuestion, newUrl],
+        args: [generatedId, newQuestion, newUrl],
         value: 0n,
       });
       await glClient.waitForTransactionReceipt({ hash: txHash, status: TransactionStatus.FINALIZED });
-      await refreshMarket();
+      setCurrentMarketId(generatedId); // Switch view to the new market
     } catch (e: any) {
       alert("Error: " + e.message);
     } finally {
@@ -87,7 +89,7 @@ function App() {
     
     try {
       // Force MetaMask popup to make the demo realistic
-      const message = `AuraMarket Prediction\n\nAction: Place Bet\nMarket ID: m1\nPrediction: ${prediction}\nAmount: 1 GEN\nTimestamp: ${new Date().toISOString()}`;
+      const message = `AuraMarket Prediction\n\nAction: Place Bet\nMarket ID: ${currentMarketId}\nPrediction: ${prediction}\nAmount: 1 GEN\nTimestamp: ${new Date().toISOString()}`;
       const hexMessage = '0x' + Array.from(new TextEncoder().encode(message))
         .map(b => b.toString(16).padStart(2, '0'))
         .join('');
@@ -105,12 +107,10 @@ function App() {
     setLoadingText(`Placing ${prediction} bet on-chain...`);
     
     try {
-      // In a production environment, we would use the walletAddress to sign.
-      // For GenLayer Studionet, we use the auto-generated client to avoid gas issues for the demo.
       const txHash = await glClient.writeContract({
         address: contractAddress as `0x${string}`,
         functionName: 'place_bet',
-        args: ['m1', prediction, "1"],
+        args: [currentMarketId, prediction, "1"],
         value: 0n,
       });
       await glClient.waitForTransactionReceipt({ hash: txHash, status: TransactionStatus.FINALIZED });
@@ -129,7 +129,7 @@ function App() {
       const txHash = await glClient.writeContract({
         address: contractAddress as `0x${string}`,
         functionName: 'resolve_market',
-        args: ['m1'],
+        args: [currentMarketId],
         value: 0n,
       });
       await glClient.waitForTransactionReceipt({ hash: txHash, status: TransactionStatus.FINALIZED });
@@ -152,13 +152,19 @@ function App() {
           <span className="badge">AI Prediction Market</span>
         </div>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <input 
-            type="text" 
-            placeholder="Contract Address" 
-            value={contractAddress}
-            onChange={e => setContractAddress(e.target.value)}
-            style={{ padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--border-glass)', background: 'rgba(0,0,0,0.5)', color: 'white', width: '200px' }}
-          />
+          {market && (
+            <button 
+              onClick={() => setMarket(null)} 
+              style={{
+                display: 'flex', alignItems: 'center', gap: '0.5rem',
+                padding: '0.6rem 1.2rem', borderRadius: '8px', border: '1px solid var(--accent-primary)',
+                background: 'transparent', color: 'var(--accent-primary)', cursor: 'pointer', fontWeight: 'bold'
+              }}
+            >
+              <PlusCircle size={18} />
+              Create Market
+            </button>
+          )}
           <button onClick={connectWallet} style={{
             display: 'flex', alignItems: 'center', gap: '0.5rem',
             padding: '0.6rem 1.2rem', borderRadius: '8px', border: 'none',
