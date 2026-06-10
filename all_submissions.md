@@ -9,7 +9,8 @@ AuraMarket is a decentralized prediction market running entirely on GenLayer Stu
 
 - **Contract Address:** `0xe5Ea8D654775Fb8883BDB9949f1B5254ae02fF2A`
 - **Explorer Link:** [View on GenLayer Studio](https://explorer-studio.genlayer.com/address/0xe5Ea8D654775Fb8883BDB9949f1B5254ae02fF2A)
-- **Source Code:** [Link to GitHub]
+- **Live Vercel App:** [AuraMarket Production](https://auramarket-three.vercel.app)
+- **Source Code:** [GitHub Repository](https://github.com/Dark-Brain07/AuraMarket)
 
 ---
 
@@ -22,4 +23,4 @@ A highly complex intelligent contract that acts as an autonomous Truth Oracle. I
 
 - **Contract Address:** `0xe5Ea8D654775Fb8883BDB9949f1B5254ae02fF2A`
 - **Explorer Link:** [View on GenLayer Studio](https://explorer-studio.genlayer.com/address/0xe5Ea8D654775Fb8883BDB9949f1B5254ae02fF2A)
-- **Source Code:** [Link to GitHub]
+- **Source Code:** [GitHub Repository](https://github.com/Dark-Brain07/AuraMarket)
